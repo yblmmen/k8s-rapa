@@ -1,0 +1,21 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "block-shadow-access"
+spec:
+  kprobes: # 커널 프로브(Kernel Probe)의 약자로, 리눅스 커널의 특정 함수가 호출될 때 Tetragon이 개입
+    - call: "security_file_permission" # 리눅스 커널에서 파일에 접근(읽기, 쓰기 등)할 때 권한을 체크하는 함수입니다. 파일 관련 보안 정책을 세울 때 가장 많이 사용되는 지점입니다.
+      syscall: false # 이 함수가 시스템 콜(System Call) 인터페이스가 아닌 커널 내부 함수임을 명시합니다.
+      args:
+        - index: 0 # file struct 함수의 첫 번째 인자로, 접근하려는 파일의 정보(struct file)를 가져옵니다.
+          type: "file"
+        - index: 1 # mask 두 번째 인자로, 어떤 권한(읽기, 쓰기 등)을 요청했는지 나타내는 마스크 값을 가져옵니다.
+          type: "int"
+      selectors: # 가장 중요한 부분으로, "누구를 잡아서 무엇을 할 것인가"를 결정합니다.
+        - matchArgs:
+            - index: 0 # (파일 정보)의 값이 /etc/shadow와 정확히 일치(Equal)하는지 확인합니다.
+              operator: "Equal"
+              values:
+                - "/etc/shadow" # 사용자 비밀번호 해시가 저장된 매우 민감한 파일입니다.
+          matchActions:
+            - action: Sigkill # 위 조건이 충족되면(누군가 /etc/shadow를 열려고 하면), 커널이 해당 프로세스에 SIGKILL 신호를 보내 즉시 강제 종료시킵니다. (Override)

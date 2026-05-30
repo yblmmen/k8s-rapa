@@ -1,0 +1,19 @@
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: "l2-policy"
+spec:
+  # 이 정책이 적용될 서비스 선택 (모든 서비스 대상)
+#  serviceSelector:
+#    matchExpressions:
+#      - {key: color, operator: DoesNotExist}
+  # 서비스의 Pod이 있는 노드만 응답하도록 설정 (핵심!)
+  nodeSelector:
+    matchLabels:
+      l2-announce: "true"
+#    matchExpressions:
+#      - {key: kubernetes.io/hostname, operator: Exists}
+  interfaces:
+    - ^ens160$  # 노드의 실제 네트워크 인터페이스 이름 (본인 환경에 맞게 수정: 예: ens3, eth0 등)
+  externalIPs: true
+  loadBalancerIPs: true

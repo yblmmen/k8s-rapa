@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy # white list (허용 규칙)
+metadata:
+  name: default-deny-ingress
+  # namespace: prod-namespace
+spec:
+  podSelector: {} # 빈 셀렉터는 네임스페이스 내 모든 Pod을 의미
+  policyTypes:
+  - Ingress

@@ -1,0 +1,17 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: production
+  namespace: metallb-system
+spec:
+  addresses:
+  - 172.16.0.200-172.16.0.220
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: production-adv
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - production

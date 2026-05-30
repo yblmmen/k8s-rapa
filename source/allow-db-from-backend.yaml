@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-db-from-backend
+  # namespace: prod-namespace
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql-pod  # 정책이 적용될 대상 Pod
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          run: nginx-pod # 트래픽을 보낼 수 있는 허용된 Pod
+    ports:
+    - protocol: TCP
+      port: 3306

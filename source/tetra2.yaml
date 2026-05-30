@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "monitor-ssh-egress"
+spec:
+  kprobes:
+    - call: "tcp_connect" # 차단
+      syscall: false
+      args:
+        - index: 0
+          type: "sock"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "DPort"
+              values:
+                - "22" # 감시
+                - "443"
+          matchActions:
+            - action: Sigkill

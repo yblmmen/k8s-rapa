@@ -1,0 +1,22 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: "l7-http-policy"
+spec:
+  endpointSelector:
+    matchLabels:
+      app: payment
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: order
+    toPorts:
+    - ports:
+      - port: "80"
+        protocol: TCP
+      rules:
+        http:
+        - method: "POST"
+          path: "/v1/pay/"
+        - method: "GET"
+          path: "/v1/pay/"

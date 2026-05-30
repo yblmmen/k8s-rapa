@@ -1,0 +1,12 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: "l3-identity-policy"
+spec:
+  endpointSelector:
+    matchLabels:
+      app: payment
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: order
